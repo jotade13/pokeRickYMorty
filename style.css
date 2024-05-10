@@ -13,7 +13,7 @@ body
     font-family: roboto;
     font-style: italic;
 }
-section
+.panel
 {
     width: 500px;
     height: 650px;
@@ -21,7 +21,7 @@ section
     display: flex;
     flex-wrap: wrap;
 }
-.contenedor-de-divs
+.contenedor-de-personajes
 {
     display: flex;
     flex-wrap: wrap;
@@ -51,7 +51,22 @@ section
     width: 100px;
     height: 80px;
 }
-.boton
+
+#boton-cargar-mas
 {
-    background-color: transparent;
+    
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 300px;
+    z-index: 999;
+    border: solid black 2px;
+    border-radius: 10%;
+    padding: 10px 20px;
+    background-color: aliceblue;
+    color: black;
+    font-weight: bold;
 }
+#boton-cargar-mas:hover {
+    background-color: rgb(212, 212, 212);
+  }

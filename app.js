@@ -1,29 +1,14 @@
-const baseUrl= "https://pokeapi.co/api/v2/pokemon/"; //Url de la api Pokemon
-const tamanoLotes = 20;
-var urls = []
+const UrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";//Primer Url de la api Pokemon
+var siguiente; 
 
-var testUrl =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";
-urls.push(testUrl);
-//obtenerUrls();
-
-obtenerDatosApi(testUrl)         // solicitamos la data de las urls
+obtenerDatosApi(UrlPokemonListado)         // solicitamos la data de las urls
     .then(data => {
         console.log('Datos obtenidos:', data);
-        agregarPokemones(data)              //agregamos los pokemones con la data obtenida
+        agregarPokemones(data)            //agregamos los pokemones con la data obtenida
     })
     .catch(error => {
         console.error('Error al obtener datos:', error);
     });
-
-/*
-function obtenerUrls()
-{
-    for(let i=1;i<=tamanoLotes;i++)
-    {
-        let urlPokemon = baseUrl+i;
-        urls.push(urlPokemon)
-    }
-}*/
 
 function obtenerDatosApi(url)
 {
@@ -53,6 +38,8 @@ function buscarDatos(url)             //solicitamos el pokemon a la api
             })
             .then(data =>
             {                          //utilizamos el nombre para obtener la informacion acerca del pokemon
+                siguiente = data.next
+                console.log(siguiente)
                 const promises = data.results.map(pokemon => 
                 {
                     return fetch(pokemon.url).then(response => response.json());
@@ -65,17 +52,22 @@ function buscarDatos(url)             //solicitamos el pokemon a la api
 function agregarPokemones(json) //agregamos cada personaje 
 {
     const seccion = document.getElementById("panel-pokemon");
-    json.results.forEach(pokemon => {
+    const cuerpo = document.getElementById("cuerpo")
+    json.forEach(pokemon => {
 
         var div =  document.createElement("div");
         div.className = "div-personaje";
-       // agregarImagen(div,pokemon);    
-       // agregarId(div,pokemon);     
+        agregarImagen(div,pokemon);    
+        agregarId(div,pokemon);     
         agregarNombre(div,pokemon);   
 
         seccion.appendChild(div)      //agrega el div del personaje a la seccion del pokemon
     });
-    agregarBotonCargarMas(seccion)
+    if(!document.getElementById("boton-cargar-mas"))
+    {
+        agregarBotonCargarMas(cuerpo);
+    }
+    
 }
 function agregarId(div,pokemon)  //agrega el id a al div del personaje
 {
@@ -103,8 +95,19 @@ function agregarImagen(div,pokemon) //agrega la imagen a al div del personaje
 
 function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la seccion 
 {
-    var botonCargarMas = document.createElement("button");
+    var botonCargarMas = document.createElement("div");
     botonCargarMas.className = "boton";
+    botonCargarMas.id = "boton-cargar-mas";
     botonCargarMas.textContent = "Cargar más"
+    botonCargarMas.addEventListener("click",function() {
+            obtenerDatosApi(siguiente)
+                .then(data => {
+                    console.log('Datos obtenidos:', data);
+                    agregarPokemones(data)            //agregamos los pokemones con la data obtenida
+                })
+                .catch(error => {
+                    console.error('Error al obtener datos:', error);
+                });
+            });
     seccion.appendChild(botonCargarMas);
 }
