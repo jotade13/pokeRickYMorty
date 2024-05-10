@@ -7,7 +7,7 @@ obtenerUrls();
 obtenerMultiplesDatosApi()          // solicitamos la data de las urls
     .then(data => {
         console.log('Datos obtenidos:', data);
-        agregarPokemones(data)
+        agregarPokemones(data)              //agregamos los pokemones con la data obtenida
     })
     .catch(error => {
         console.error('Error al obtener datos:', error);
@@ -29,11 +29,10 @@ function obtenerMultiplesDatosApi()
     
     return Promise.all(promesas)
     .then(data => {
-        // Devolver los datos obtenidos
+                        // Devolver los datos obtenidos
         return data;
     })
     .catch(error => {
-        // Manejar cualquier error que ocurra durante el proceso
         console.error('Error al obtener datos:', error);
         throw error; // Propagar el error para que sea manejado por la llamada a la función
     });
@@ -58,10 +57,10 @@ function agregarPokemones(json)
     json.forEach(pokemon => {
 
         var div =  document.createElement("div");
-        div.className = "div-pokemon";
+        div.className = "div-personaje";
+        agregarImagen(div,pokemon);    
         agregarId(div,pokemon);     
         agregarNombre(div,pokemon);   
-        agregarImagen(div,pokemon);      
 
         seccion.appendChild(div)      //agrega el div del pokemon a la seccion del pokemon
     });
@@ -69,7 +68,7 @@ function agregarPokemones(json)
 function agregarId(div,pokemon)  //agrega el id a al div del pokemon
 {
     var pokemonId = document.createElement("b")
-    pokemonId.className = "pokmeon-id"
+    pokemonId.className = "pokemon-id"
     var texto = document.createTextNode(pokemon.id) 
     pokemonId.appendChild(texto)
     div.appendChild(pokemonId)
@@ -82,11 +81,11 @@ function agregarNombre(div,pokemon) //agrega el nombre a al div del pokemon
     pokemonNombre.appendChild(texto)
     div.appendChild(pokemonNombre)
 }
-/*
+
 function agregarImagen(div,pokemon) //agrega la imagen a al div del pokemon
 {
     var pokemonImagen = document.createElement("img")
     pokemonImagen.className = "pokemon-imagen"
-    pokemonImagen.src = pokemon.nombreImagen  
+    pokemonImagen.src = pokemon.sprites.front_default
     div.appendChild(pokemonImagen)
-}*/
+}

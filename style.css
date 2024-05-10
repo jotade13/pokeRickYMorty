@@ -2,6 +2,17 @@ body
 {
     background-color: rgb(40, 40, 40);
 }
+.div-titulos
+{
+    display: flex;
+}
+.titulo
+{
+    color: white;
+    text-align: center;
+    width: 700px;
+}
+
 .panel
 {
     display: flex;
@@ -10,14 +21,36 @@ body
 section
 {
     width: 650px;
-    height: 700px;
+    height: 650px;
     border: solid 2px black;
     border-radius: 5%;
     margin:  auto;
+    display: flex;
+    flex-wrap: wrap;
 }
-
-.titulo
+.contenedor-de-divs
 {
-    color: white;
+    display: flex;
+    flex-wrap: wrap;
+}
+.div-personaje
+{
+    width: 25%;
+    border: 1px solid;
+    box-sizing: border-box;
+    border-radius: 20%;
     text-align: center;
+}
+.pokemon-id
+{
+    display: block;
+}
+.pokemon-nombre
+{
+    font-size: 12px;
+}
+.pokemon-imagen
+{
+    width: 100px;
+    height: 80px;
 }
