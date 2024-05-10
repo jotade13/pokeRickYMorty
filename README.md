@@ -13,6 +13,10 @@ de dos api gratiutas que son: "PokéApi" y "Rick and Morty API"
 
 luego de haber clonado, puedes proceder a abrir cualquiera de las 2 páginas que deseas abrir para ver la información de cada una de ellas
 
+## Funcionalidad
+
+   puedes undirle al boton de cargar mas para ver mas personajes
+
 ## Autor
 
 José Mora

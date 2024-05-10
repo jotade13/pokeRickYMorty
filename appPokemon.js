@@ -1,15 +1,29 @@
-const primerUrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
-var siguiente;
+const primerUrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";
+var siguienteUrl;
+const PrimeUrlRickYMorty = "https://rickandmortyapi.com/api/character";
+const tituloPagina = document.title;
 
 window.onload = function() {
-obtenerDatosApi(primerUrlPokemonListado)         // solicitamos la data de las urls
-    .then(data => {
-        console.log('Datos obtenidos:', data);
-        agregarPokemones(data)            //agregamos los personajes con la data obtenida
-    })
-    .catch(error => {
-        console.error('Error al obtener datos:', error);
-    });
+    const url = asignarUrl();
+    obtenerDatosApi(url)         // solicitamos la data de las urls
+        .then(data => {
+            console.log('Datos obtenidos:', data);
+            agregarPersonajes(data)            //agregamos los personajes con la data obtenida
+        })
+        .catch(error => {
+            console.error('Error al obtener datos:', error);
+        });
+}
+
+function asignarUrl()
+{
+    if(tituloPagina==="Pokémon")
+    {
+        return primerUrlPokemonListado;
+    }else
+    {
+        return PrimeUrlRickYMorty;
+    }
 }
 function obtenerDatosApi(url)   //solicita los datos de una api con la url indicada
 {
@@ -39,9 +53,15 @@ function buscarDatos(url)             //solicita la lista de los personajes
                 return response.json();
             })
             .then(data =>
-            {                          
-                siguiente = data.next
-                console.log(siguiente)
+            {   
+                if(tituloPagina==="Pokémon")
+                    {
+                        siguienteUrl = data.next 
+                    }else
+                    {
+                        siguienteUrl = data.info.next 
+                    }                       
+                   //se guarda la siguienteUrl para poder cargar mas
                 const promises = data.results.map(pokemon => 
                 {
                     return fetch(pokemon.url)               //Solicita con la url de cada uno la información de los personajes
@@ -56,19 +76,26 @@ function buscarDatos(url)             //solicita la lista de los personajes
 }
 
 
-function agregarPokemones(json) //agregamos cada personaje 
+function agregarPersonajes(json) //agregamos cada personaje 
 {
-    const seccion = document.getElementById("panel-pokemon");
+    var divContenedor = null;
+    if(tituloPagina==="Pokémon")
+    {
+        divContenedor = document.getElementById("panel-pokemon");
+    }else
+    {
+        divContenedor = document.getElementById("panel-rick-y-morty");
+    }
     const cuerpo = document.getElementById("cuerpo")
-    json.forEach(pokemon => {
+    json.forEach(personaje => {
 
         var div =  document.createElement("div");
         div.className = "div-personaje";
-        agregarImagen(div,pokemon);    
-        agregarId(div,pokemon);     
-        agregarNombre(div,pokemon);   
+        agregarImagen(div,personaje);    
+        agregarId(div,personaje);     
+        agregarNombre(div,personaje);   
 
-        seccion.appendChild(div)      //agrega el div del personaje a la seccion del pokemon
+        divContenedor.appendChild(div)      //agrega el div del personaje a la seccion del pokemon
     });
     if(!document.getElementById("boton-cargar-mas"))
     {
@@ -76,27 +103,35 @@ function agregarPokemones(json) //agregamos cada personaje
     }
     
 }
-function agregarId(div,pokemon)  //agrega el id a al div del personaje
+
+function agregarId(div,personaje)  //agrega el id a al div del personaje
 {
-    var pokemonId = document.createElement("b")
-    pokemonId.className = "personaje-id"
-    var texto = document.createTextNode(pokemon.id) 
-    pokemonId.appendChild(texto)
-    div.appendChild(pokemonId)
-}
-function agregarNombre(div,pokemon) //agrega el nombre a al div del personaje
-{
-    var pokemonNombre = document.createElement("b")
-    pokemonNombre.className = "personaje-nombre"
-    pokemonNombre.textContent = pokemon.name
-    div.appendChild(pokemonNombre)
+    var personajeId = document.createElement("b")
+    personajeId.className = "personaje-id"
+    var texto = document.createTextNode(personaje.id) 
+    personajeId.appendChild(texto)
+    div.appendChild(personajeId)
 }
 
-function agregarImagen(div,pokemon) //agrega la imagen a al div del personaje
+function agregarNombre(div,personaje) //agrega el nombre a al div del personaje
+{
+    var personajeNombre = document.createElement("b")
+    personajeNombre.className = "personaje-nombre"
+    personajeNombre.textContent = personaje.name
+    div.appendChild(personajeNombre)
+}
+
+function agregarImagen(div,personaje) //agrega la imagen a al div del personaje
 {
     var pokemonImagen = document.createElement("img")
     pokemonImagen.className = "personaje-imagen"
-    pokemonImagen.src = pokemon.sprites.front_default
+    if(tituloPagina==="Pokémon")
+    {
+        pokemonImagen.src = personaje.sprites.front_default
+    }else if(tituloPagina==="Rick Y Morty")
+    {
+        pokemonImagen.src = personaje.image
+    }
     div.appendChild(pokemonImagen)
 }
 
@@ -107,10 +142,10 @@ function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la sec
     botonCargarMas.id = "boton-cargar-mas";
     botonCargarMas.textContent = "Cargar más"
     botonCargarMas.addEventListener("click",function() {
-            obtenerDatosApi(siguiente)
+            obtenerDatosApi(siguienteUrl)
                 .then(data => {
                     console.log('Datos obtenidos:', data);
-                    agregarPokemones(data)            //agregamos los pokemones con la data obtenida
+                    agregarPersonajes(data)            //agregamos los pokemones con la data obtenida
                 })
                 .catch(error => {
                     console.error('Error al obtener datos:', error);
@@ -118,8 +153,6 @@ function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la sec
             });
     seccion.appendChild(botonCargarMas);
 }
-
-
 function agregarAvisoCargandoInformacion()
 {
     
