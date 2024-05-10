@@ -4,8 +4,8 @@ const PrimeUrlRickYMorty = "https://rickandmortyapi.com/api/character";
 const tituloPagina = document.title;
 
 window.onload = function() {
-    const url = asignarUrl();
-    obtenerDatosApi(url)         // solicitamos la data de las urls
+   
+    obtenerDatosApiPokemon(primerUrlPokemonListado)         // solicitamos la data de las urls
         .then(data => {
             console.log('Datos obtenidos:', data);
             agregarPersonajes(data)            //agregamos los personajes con la data obtenida
@@ -15,20 +15,11 @@ window.onload = function() {
         });
 }
 
-function asignarUrl()
-{
-    if(tituloPagina==="Pokémon")
-    {
-        return primerUrlPokemonListado;
-    }else
-    {
-        return PrimeUrlRickYMorty;
-    }
-}
-function obtenerDatosApi(url)   //solicita los datos de una api con la url indicada
+
+function obtenerDatosApiPokemon(url)   //solicita los datos de una api con la url indicada
 {
     agregarAvisoCargandoInformacion();
-    const promesa = buscarDatos(url);
+    const promesa = buscarDatosPokemon(url);
     
     return promesa
     .then(data => {
@@ -41,7 +32,7 @@ function obtenerDatosApi(url)   //solicita los datos de una api con la url indic
     });
 }
 
-function buscarDatos(url)             //solicita la lista de los personajes
+function buscarDatosPokemon(url)             //solicita la lista de los personajes
 {
     return fetch(url)
             .then(response => 
@@ -54,15 +45,10 @@ function buscarDatos(url)             //solicita la lista de los personajes
             })
             .then(data =>
             {   
-                if(tituloPagina==="Pokémon")
-                    {
-                        siguienteUrl = data.next 
-                    }else
-                    {
-                        siguienteUrl = data.info.next 
-                    }                       
-                   //se guarda la siguienteUrl para poder cargar mas
-                const promises = data.results.map(pokemon => 
+        
+                siguienteUrl = data.next   //se guarda la siguiente url para poder cargar mas
+            
+                const promesas = data.results.map(pokemon => 
                 {
                     return fetch(pokemon.url)               //Solicita con la url de cada uno la información de los personajes
                     .then(response => response.json())
@@ -71,21 +57,13 @@ function buscarDatos(url)             //solicita la lista de los personajes
                     });
                 });
               
-              return Promise.all(promises);
+              return Promise.all(promesas);
             });
 }
 
-
 function agregarPersonajes(json) //agregamos cada personaje 
 {
-    var divContenedor = null;
-    if(tituloPagina==="Pokémon")
-    {
-        divContenedor = document.getElementById("panel-pokemon");
-    }else
-    {
-        divContenedor = document.getElementById("panel-rick-y-morty");
-    }
+    const divContenedor = document.getElementById("panel-pokemon");
     const cuerpo = document.getElementById("cuerpo")
     json.forEach(personaje => {
 
@@ -100,9 +78,10 @@ function agregarPersonajes(json) //agregamos cada personaje
     if(!document.getElementById("boton-cargar-mas"))
     {
         agregarBotonCargarMas(cuerpo);
-    }
-    
+    } 
 }
+
+
 
 function agregarId(div,personaje)  //agrega el id a al div del personaje
 {
@@ -125,13 +104,7 @@ function agregarImagen(div,personaje) //agrega la imagen a al div del personaje
 {
     var pokemonImagen = document.createElement("img")
     pokemonImagen.className = "personaje-imagen"
-    if(tituloPagina==="Pokémon")
-    {
-        pokemonImagen.src = personaje.sprites.front_default
-    }else if(tituloPagina==="Rick Y Morty")
-    {
-        pokemonImagen.src = personaje.image
-    }
+    pokemonImagen.src = personaje.sprites.front_default
     div.appendChild(pokemonImagen)
 }
 
@@ -142,7 +115,7 @@ function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la sec
     botonCargarMas.id = "boton-cargar-mas";
     botonCargarMas.textContent = "Cargar más"
     botonCargarMas.addEventListener("click",function() {
-            obtenerDatosApi(siguienteUrl)
+            obtenerDatosApiPokemon(siguienteUrl)
                 .then(data => {
                     console.log('Datos obtenidos:', data);
                     agregarPersonajes(data)            //agregamos los pokemones con la data obtenida
