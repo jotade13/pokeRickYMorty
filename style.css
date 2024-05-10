@@ -54,19 +54,34 @@ body
 
 #boton-cargar-mas
 {
-    
     cursor: pointer;
     position: fixed;
-    bottom: 20px;
-    right: 300px;
+    bottom: 70px;
+    right: 250px;
     z-index: 999;
     border: solid black 2px;
     border-radius: 10%;
     padding: 10px 20px;
-    background-color: aliceblue;
-    color: black;
+    background-color: rgb(0, 109, 204);
+    color: rgb(255, 255, 255);
     font-weight: bold;
+    font-family: roboto;
+    box-shadow: 2rem;
 }
-#boton-cargar-mas:hover {
-    background-color: rgb(212, 212, 212);
-  }
+#boton-cargar-mas:hover
+{
+    background-color: rgb(0, 58, 109);
+}
+#div-cargando
+{
+    position: fixed;
+    bottom: 20px;
+    right: 250px;
+    z-index: 999;
+    border-radius: 10%;
+    padding: 10px 20px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-family: roboto;
+    display: none;
+}

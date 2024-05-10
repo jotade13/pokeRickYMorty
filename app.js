@@ -1,23 +1,25 @@
-const UrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";//Primer Url de la api Pokemon
-var siguiente; 
+const primerUrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
+var siguiente;
 
-obtenerDatosApi(UrlPokemonListado)         // solicitamos la data de las urls
+window.onload = function() {
+obtenerDatosApi(primerUrlPokemonListado)         // solicitamos la data de las urls
     .then(data => {
         console.log('Datos obtenidos:', data);
-        agregarPokemones(data)            //agregamos los pokemones con la data obtenida
+        agregarPokemones(data)            //agregamos los personajes con la data obtenida
     })
     .catch(error => {
         console.error('Error al obtener datos:', error);
     });
-
-function obtenerDatosApi(url)
+}
+function obtenerDatosApi(url)   //solicita los datos de una api con la url indicada
 {
+    agregarAvisoCargandoInformacion();
     const promesa = buscarDatos(url);
     
     return promesa
     .then(data => {
-                        // Devolver los datos obtenidos
-        return data;
+                        
+        return data;    
     })
     .catch(error => {
         console.error('Error al obtener datos:', error);
@@ -25,7 +27,7 @@ function obtenerDatosApi(url)
     });
 }
 
-function buscarDatos(url)             //solicitamos el pokemon a la api
+function buscarDatos(url)             //solicita la lista de los personajes
 {
     return fetch(url)
             .then(response => 
@@ -37,17 +39,22 @@ function buscarDatos(url)             //solicitamos el pokemon a la api
                 return response.json();
             })
             .then(data =>
-            {                          //utilizamos el nombre para obtener la informacion acerca del pokemon
+            {                          
                 siguiente = data.next
                 console.log(siguiente)
                 const promises = data.results.map(pokemon => 
                 {
-                    return fetch(pokemon.url).then(response => response.json());
+                    return fetch(pokemon.url)               //Solicita con la url de cada uno la información de los personajes
+                    .then(response => response.json())
+                    . finally(() =>{
+                        quitarAvisoCargandoInformación();
+                    });
                 });
               
               return Promise.all(promises);
             });
 }
+
 
 function agregarPokemones(json) //agregamos cada personaje 
 {
@@ -95,7 +102,7 @@ function agregarImagen(div,pokemon) //agrega la imagen a al div del personaje
 
 function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la seccion 
 {
-    var botonCargarMas = document.createElement("div");
+    const botonCargarMas = document.createElement("div");
     botonCargarMas.className = "boton";
     botonCargarMas.id = "boton-cargar-mas";
     botonCargarMas.textContent = "Cargar más"
@@ -110,4 +117,16 @@ function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la sec
                 });
             });
     seccion.appendChild(botonCargarMas);
+}
+
+
+function agregarAvisoCargandoInformacion()
+{
+    
+    document.getElementById("div-cargando").style.display = "block";
+}
+function quitarAvisoCargandoInformación()
+{
+   
+    document.getElementById("div-cargando").style.display = "none";
 }
