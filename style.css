@@ -1,0 +1,23 @@
+body
+{
+    background-color: rgb(40, 40, 40);
+}
+.panel
+{
+    display: flex;
+    align-items: center;
+}
+section
+{
+    width: 650px;
+    height: 700px;
+    border: solid 2px black;
+    border-radius: 5%;
+    margin:  auto;
+}
+
+.titulo
+{
+    color: white;
+    text-align: center;
+}
