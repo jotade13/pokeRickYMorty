@@ -16,5 +16,3 @@ luego de haber clonado, puedes proceder a abrir cualquiera de las 2 páginas que
 ## Autor
 
 José Mora
-
-
