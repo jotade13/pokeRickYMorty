@@ -2,9 +2,11 @@ const baseUrl= "https://pokeapi.co/api/v2/pokemon/"; //Url de la api Pokemon
 const tamanoLotes = 20;
 var urls = []
 
-obtenerUrls();
+var testUrl =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";
+urls.push(testUrl);
+//obtenerUrls();
 
-obtenerMultiplesDatosApi()          // solicitamos la data de las urls
+obtenerDatosApi(testUrl)         // solicitamos la data de las urls
     .then(data => {
         console.log('Datos obtenidos:', data);
         agregarPokemones(data)              //agregamos los pokemones con la data obtenida
@@ -12,8 +14,8 @@ obtenerMultiplesDatosApi()          // solicitamos la data de las urls
     .catch(error => {
         console.error('Error al obtener datos:', error);
     });
-    
 
+/*
 function obtenerUrls()
 {
     for(let i=1;i<=tamanoLotes;i++)
@@ -21,13 +23,13 @@ function obtenerUrls()
         let urlPokemon = baseUrl+i;
         urls.push(urlPokemon)
     }
-}
+}*/
 
-function obtenerMultiplesDatosApi()
+function obtenerDatosApi(url)
 {
-    const promesas = urls.map(url => buscarDatos(url));
+    const promesa = buscarDatos(url);
     
-    return Promise.all(promesas)
+    return promesa
     .then(data => {
                         // Devolver los datos obtenidos
         return data;
@@ -38,7 +40,7 @@ function obtenerMultiplesDatosApi()
     });
 }
 
-function buscarDatos(url)             //pedimos la lista pokemon a la api
+function buscarDatos(url)             //solicitamos el pokemon a la api
 {
     return fetch(url)
             .then(response => 
@@ -49,43 +51,60 @@ function buscarDatos(url)             //pedimos la lista pokemon a la api
                 }
                 return response.json();
             })
+            .then(data =>
+            {                          //utilizamos el nombre para obtener la informacion acerca del pokemon
+                const promises = data.results.map(pokemon => 
+                {
+                    return fetch(pokemon.url).then(response => response.json());
+                });
+              
+              return Promise.all(promises);
+            });
 }
 
-function agregarPokemones(json)
+function agregarPokemones(json) //agregamos cada personaje 
 {
     const seccion = document.getElementById("panel-pokemon");
-    json.forEach(pokemon => {
+    json.results.forEach(pokemon => {
 
         var div =  document.createElement("div");
         div.className = "div-personaje";
-        agregarImagen(div,pokemon);    
-        agregarId(div,pokemon);     
+       // agregarImagen(div,pokemon);    
+       // agregarId(div,pokemon);     
         agregarNombre(div,pokemon);   
 
-        seccion.appendChild(div)      //agrega el div del pokemon a la seccion del pokemon
+        seccion.appendChild(div)      //agrega el div del personaje a la seccion del pokemon
     });
+    agregarBotonCargarMas(seccion)
 }
-function agregarId(div,pokemon)  //agrega el id a al div del pokemon
+function agregarId(div,pokemon)  //agrega el id a al div del personaje
 {
     var pokemonId = document.createElement("b")
-    pokemonId.className = "pokemon-id"
+    pokemonId.className = "personaje-id"
     var texto = document.createTextNode(pokemon.id) 
     pokemonId.appendChild(texto)
     div.appendChild(pokemonId)
 }
-function agregarNombre(div,pokemon) //agrega el nombre a al div del pokemon
+function agregarNombre(div,pokemon) //agrega el nombre a al div del personaje
 {
     var pokemonNombre = document.createElement("b")
-    pokemonNombre.className = "pokemon-nombre"
-    var texto = document.createTextNode(pokemon.name) 
-    pokemonNombre.appendChild(texto)
+    pokemonNombre.className = "personaje-nombre"
+    pokemonNombre.textContent = pokemon.name
     div.appendChild(pokemonNombre)
 }
 
-function agregarImagen(div,pokemon) //agrega la imagen a al div del pokemon
+function agregarImagen(div,pokemon) //agrega la imagen a al div del personaje
 {
     var pokemonImagen = document.createElement("img")
-    pokemonImagen.className = "pokemon-imagen"
+    pokemonImagen.className = "personaje-imagen"
     pokemonImagen.src = pokemon.sprites.front_default
     div.appendChild(pokemonImagen)
+}
+
+function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la seccion 
+{
+    var botonCargarMas = document.createElement("button");
+    botonCargarMas.className = "boton";
+    botonCargarMas.textContent = "Cargar más"
+    seccion.appendChild(botonCargarMas);
 }
