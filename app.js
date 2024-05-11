@@ -9,7 +9,6 @@ if(esPokemon(tituloPagina))
    
         obtenerDatosApiPokemon(primerUrlPokemonListado)         // solicitamos la data de la primera url
             .then(data => {
-                console.log('Datos obtenidos:', data);
                 agregarPersonajes(data)            //agregamos los personajes con la data obtenida
             })
             .catch(error => {
@@ -64,9 +63,7 @@ function buscarDatosPokemon(url)             //solicita la lista de los personaj
             })
             .then(data =>
             {   
-        
                 siguienteUrl = data.next   //se guarda la siguiente url para poder cargar mas
-            
                 const promesas = data.results.map(pokemon => 
                 {
                     return fetch(pokemon.url)               //Solicita con la url de cada uno la información de los personajes
@@ -86,9 +83,9 @@ async function obtenerDatosApiRickYMorty(PrimeUrlRickYMorty)   //solicita los da
     try
     {
         const respuesta = await buscarDatosRickYMorty(PrimeUrlRickYMorty);
-        console.log(respuesta);
-        agregarPersonajes(respuesta.results);
         siguienteUrl = respuesta.info.next
+        console.log(siguienteUrl)
+        agregarPersonajes(respuesta.results);
     }catch
     {
         console.error('Error al obtener datos:', error);
@@ -126,10 +123,8 @@ function agregarPersonajes(json) //agregamos cada personaje
 
         divContenedor.appendChild(div)      //agrega el div del personaje a la seccion del pokemon
     });
-    if(!document.getElementById("boton-cargar-mas"))
-    {
         agregarBotonCargarMas(cuerpo);
-    } 
+        quitarBotonCargarMas();
 }
 
 function obtenerContenedor() //obtiene el contenedor dependiendo de la pagina que esta
@@ -181,14 +176,18 @@ function obtenerImagen(personaje) //obtiene la imagen dependiendo del titulo de 
     }
 }
 
+
 function agregarBotonCargarMas(contenedor)    //agrega el boton cargar mas a la seccion 
 {
-    const botonCargarMas = document.createElement("div");
-    botonCargarMas.className = "boton";
-    botonCargarMas.id = "boton-cargar-mas";
-    botonCargarMas.textContent = "Cargar más"
-    agregarEventListener(botonCargarMas);
-    contenedor.appendChild(botonCargarMas);
+    if(!document.getElementById("boton-cargar-mas"))
+        {
+            const botonCargarMas = document.createElement("div");
+            botonCargarMas.className = "boton";
+            botonCargarMas.id = "boton-cargar-mas";
+            botonCargarMas.textContent = "Cargar más"
+            agregarEventListener(botonCargarMas);
+            contenedor.appendChild(botonCargarMas);
+        }
 }
 
 function agregarEventListener(botonCargarMas) 
@@ -198,7 +197,6 @@ function agregarEventListener(botonCargarMas)
         botonCargarMas.addEventListener("click",function() {
             obtenerDatosApiPokemon(siguienteUrl)
                 .then(data => {
-                    console.log('Datos obtenidos:', data);
                     agregarPersonajes(data)            //agregamos los pokemones con la data obtenida
                 })
                 .catch(error => {
@@ -210,7 +208,16 @@ function agregarEventListener(botonCargarMas)
     {
         botonCargarMas.addEventListener("click",function() {
             obtenerDatosApiRickYMorty(siguienteUrl)
-      });
+        });
+    }
+}
+
+function quitarBotonCargarMas()
+{
+    if(!siguienteUrl)
+    {
+        document.getElementById("boton-cargar-mas").style.display = "none";
+
     }
 }
 

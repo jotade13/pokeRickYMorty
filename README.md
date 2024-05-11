@@ -15,7 +15,7 @@ luego de haber clonado, puedes proceder a abrir cualquiera de las 2 páginas que
 
 ## Funcionalidad
 
-   puedes undirle al boton de cargar mas para ver mas personajes
+   puedes undirle al boton de cargar mas para ver mas personajes los cuales se cargan en lotes de 20
 
 ## Autor
 
