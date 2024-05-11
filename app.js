@@ -84,7 +84,6 @@ async function obtenerDatosApiRickYMorty(PrimeUrlRickYMorty)   //solicita los da
     {
         const respuesta = await buscarDatosRickYMorty(PrimeUrlRickYMorty);
         siguienteUrl = respuesta.info.next
-        console.log(siguienteUrl)
         agregarPersonajes(respuesta.results);
     }catch
     {
