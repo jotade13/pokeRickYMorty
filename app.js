@@ -1,20 +1,39 @@
 const primerUrlPokemonListado =  "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20";
 var siguienteUrl;
-const PrimeUrlRickYMorty = "https://rickandmortyapi.com/api/character";
+const PrimerUrlRickYMorty = "https://rickandmortyapi.com/api/character";
 const tituloPagina = document.title;
 
-window.onload = function() {
+if(esPokemon(tituloPagina))
+{
+    window.onload = function() {
    
-    obtenerDatosApiPokemon(primerUrlPokemonListado)         // solicitamos la data de las urls
-        .then(data => {
-            console.log('Datos obtenidos:', data);
-            agregarPersonajes(data)            //agregamos los personajes con la data obtenida
-        })
-        .catch(error => {
-            console.error('Error al obtener datos:', error);
-        });
+        obtenerDatosApiPokemon(primerUrlPokemonListado)         // solicitamos la data de la primera url
+            .then(data => {
+                console.log('Datos obtenidos:', data);
+                agregarPersonajes(data)            //agregamos los personajes con la data obtenida
+            })
+            .catch(error => {
+                console.error('Error al obtener datos:', error);
+            });
+    }
+}else
+{
+    window.onload = function() {
+        obtenerDatosApiRickYMorty(PrimerUrlRickYMorty); // solicita data de la primera url ricky Morty
+    }
 }
 
+
+function esPokemon(texto)   //funcion que devuelve tru si es Pokémon
+{
+    if(texto=="Pokémon")
+    {
+        return true;
+    }else
+    {
+        return false;
+    }
+}
 
 function obtenerDatosApiPokemon(url)   //solicita los datos de una api con la url indicada
 {
@@ -61,10 +80,42 @@ function buscarDatosPokemon(url)             //solicita la lista de los personaj
             });
 }
 
+async function obtenerDatosApiRickYMorty(PrimeUrlRickYMorty)   //solicita los datos de una api con la url indicada
+{
+    agregarAvisoCargandoInformacion();
+    try
+    {
+        const respuesta = await buscarDatosRickYMorty(PrimeUrlRickYMorty);
+        console.log(respuesta);
+        agregarPersonajes(respuesta.results);
+        siguienteUrl = respuesta.info.next
+    }catch
+    {
+        console.error('Error al obtener datos:', error);
+    }finally{
+        quitarAvisoCargandoInformación();
+    }
+}
+
+function buscarDatosRickYMorty(url)
+{
+    return fetch(url)
+            .then(response => 
+            {
+                if (!response.ok) 
+                {
+                    reject(new Error(`Error al realizar la solicitud. Código de estado: ${response.status}`));
+                }
+                return response.json();
+            })
+}
+
+
 function agregarPersonajes(json) //agregamos cada personaje 
 {
-    const divContenedor = document.getElementById("panel-pokemon");
-    const cuerpo = document.getElementById("cuerpo")
+    const divContenedor = obtenerContenedor();
+    const cuerpo = document.getElementById("cuerpo");
+
     json.forEach(personaje => {
 
         var div =  document.createElement("div");
@@ -81,7 +132,17 @@ function agregarPersonajes(json) //agregamos cada personaje
     } 
 }
 
-
+function obtenerContenedor() //obtiene el contenedor dependiendo de la pagina que esta
+{
+    if(esPokemon(tituloPagina))
+    {
+        return document.getElementById("panel-pokemon");
+    }
+    else
+    {
+        return document.getElementById("panel-rick-y-morty");
+    }
+}
 
 function agregarId(div,personaje)  //agrega el id a al div del personaje
 {
@@ -94,27 +155,47 @@ function agregarId(div,personaje)  //agrega el id a al div del personaje
 
 function agregarNombre(div,personaje) //agrega el nombre a al div del personaje
 {
-    var personajeNombre = document.createElement("b")
-    personajeNombre.className = "personaje-nombre"
-    personajeNombre.textContent = personaje.name
+    var personajeNombre = document.createElement("b");
+    personajeNombre.className = "personaje-nombre";
+    personajeNombre.textContent = personaje.name;
     div.appendChild(personajeNombre)
 }
 
 function agregarImagen(div,personaje) //agrega la imagen a al div del personaje
 {
-    var pokemonImagen = document.createElement("img")
-    pokemonImagen.className = "personaje-imagen"
-    pokemonImagen.src = personaje.sprites.front_default
-    div.appendChild(pokemonImagen)
+    var pokemonImagen = document.createElement("img");
+    pokemonImagen.className = "personaje-imagen";
+    pokemonImagen.src = obtenerImagen(personaje);
+    div.appendChild(pokemonImagen);
 }
 
-function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la seccion 
+function obtenerImagen(personaje) //obtiene la imagen dependiendo del titulo de la pagina
+{
+    if(esPokemon(tituloPagina))
+    {
+        return personaje.sprites.front_default;
+    }
+    else
+    {
+        return personaje.image;
+    }
+}
+
+function agregarBotonCargarMas(contenedor)    //agrega el boton cargar mas a la seccion 
 {
     const botonCargarMas = document.createElement("div");
     botonCargarMas.className = "boton";
     botonCargarMas.id = "boton-cargar-mas";
     botonCargarMas.textContent = "Cargar más"
-    botonCargarMas.addEventListener("click",function() {
+    agregarEventListener(botonCargarMas);
+    contenedor.appendChild(botonCargarMas);
+}
+
+function agregarEventListener(botonCargarMas) 
+{
+    if(esPokemon(tituloPagina))
+    {
+        botonCargarMas.addEventListener("click",function() {
             obtenerDatosApiPokemon(siguienteUrl)
                 .then(data => {
                     console.log('Datos obtenidos:', data);
@@ -124,8 +205,15 @@ function agregarBotonCargarMas(seccion)    //agrega el boton cargar mas a la sec
                     console.error('Error al obtener datos:', error);
                 });
             });
-    seccion.appendChild(botonCargarMas);
+    }
+    else
+    {
+        botonCargarMas.addEventListener("click",function() {
+            obtenerDatosApiRickYMorty(siguienteUrl)
+      });
+    }
 }
+
 function agregarAvisoCargandoInformacion()
 {
     
